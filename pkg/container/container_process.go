@@ -25,6 +25,10 @@ func NewParentProcess(tty bool, command string) *exec.Cmd {
 
 func RunContainerInitProcess(command string, args []string) error {
 	log.Infof("command %s", command)
+	if err := syscall.Mount("", "/", "", syscall.MS_PRIVATE|syscall.MS_REC, ""); err != nil {
+		log.Error(err)
+		return err
+	}
 	defaultMountFlags := syscall.MS_NOEXEC | syscall.MS_NOSUID | syscall.MS_NODEV
 	if err := syscall.Mount("proc", "/proc", "proc", uintptr(defaultMountFlags), ""); err != nil {
 		log.Error(err)

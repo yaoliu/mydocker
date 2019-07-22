@@ -28,10 +28,11 @@ func main() {
 	app.Before = func(context *cli.Context) error {
 		log.SetFormatter(&log.JSONFormatter{})
 		log.SetOutput(os.Stdout)
+		log.Info("mydocker")
 		return nil
 	}
 	if err := app.Run(os.Args); err != nil {
-		log.Fatal(err)
+		log.Fatalf("app run %s", err)
 	}
 }
 
@@ -40,6 +41,20 @@ func namespaceDemo() {
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Cloneflags: syscall.CLONE_NEWNET | syscall.CLONE_NEWUSER | syscall.CLONE_NEWNS | syscall.CLONE_NEWIPC | syscall.CLONE_NEWPID |
 			syscall.CLONE_NEWUTS | syscall.CLONE_NEWUSER,
+		UidMappings: []syscall.SysProcIDMap{
+			{
+				ContainerID: 1234,
+				HostID:      0,
+				Size:        1,
+			},
+		},
+		GidMappings: []syscall.SysProcIDMap{
+			{
+				ContainerID: 1234,
+				HostID:      0,
+				Size:        1,
+			},
+		},
 	}
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
@@ -83,12 +98,12 @@ func cgroupDemo() {
 			fmt.Println("ERROR", err)
 			os.Exit(-1)
 		}
-		err = ioutil.WriteFile(path.Join(cgroupMemoryHierarchyMount, "tasks"), []byte(strconv.Itoa(cmd.Process.Pid)), 0644)
+		err = ioutil.WriteFile(path.Join(cgroupMemoryHierarchyMount, "testmemorylimit", "tasks"), []byte(strconv.Itoa(cmd.Process.Pid)), 0644)
 		if err != nil {
 			fmt.Println("ERROR", err)
 			os.Exit(-1)
 		}
-		err = ioutil.WriteFile(path.Join(cgroupMemoryHierarchyMount, "testmemorylimit"), []byte("100m"), 0644)
+		err = ioutil.WriteFile(path.Join(cgroupMemoryHierarchyMount, "testmemorylimit", "memory.limit_in_bytes"), []byte("100m"), 0644)
 		if err != nil {
 			fmt.Println("ERROR", err)
 			os.Exit(-1)
