@@ -1,14 +1,18 @@
 //__author__ = "YaoYao"
-//Date: 2019-07-21
-package main
+//Date: 2019-07-27
+package command
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"mydocker/pkg/container"
 	"mydocker/pkg/run"
 )
+
+var Commands = []cli.Command{
+	runCommand,
+	initCommand,
+}
 
 var runCommand = cli.Command{
 	Name:  "run",
@@ -35,7 +39,6 @@ var initCommand = cli.Command{
 	Usage: "Init container process run user's process in container Do not call it outside",
 	Action: func(ctx *cli.Context) error {
 		cmd := ctx.Args().Get(0)
-		log.Infof("command %s", cmd)
 		err := container.RunContainerInitProcess(cmd, nil)
 		return err
 	},

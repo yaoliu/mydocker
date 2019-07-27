@@ -11,6 +11,7 @@ import (
 
 func NewParentProcess(tty bool, command string) *exec.Cmd {
 	args := []string{"init", command}
+	//此时exe应该是进程本身
 	cmd := exec.Command("/proc/self/exe", args...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWIPC | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWNET,
